@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 	// Decode the state parameter to get repoOwner and repoName
 	const { repoOwner, repoName } = JSON.parse(decodeURIComponent(state));
 
-	// Step 1: Get Access Token from GitHub
+	// Step 1: Get Access Token from GitHub :
 	const tokenResponse = await fetch(
 		"https://github.com/login/oauth/access_token",
 		{
