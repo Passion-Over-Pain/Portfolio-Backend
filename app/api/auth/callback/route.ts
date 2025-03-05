@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
 	// Step 2: Star the Repository
 	const repoOwner = "Passion-Over-Pain"; // Change this to your GitHub username/org
-	const repoName = "Portfolio"; // Change this to the repo you want to star
+	const repoName = "Portfolio-Backend"; // Change this to the repo you want to star
 
 	const starResponse = await fetch(
 		`https://api.github.com/user/starred/${repoOwner}/${repoName}`,
