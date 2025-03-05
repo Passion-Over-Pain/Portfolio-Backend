@@ -3,10 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
 	const url = new URL(req.url);
 	const code = url.searchParams.get("code");
+	const repoOwner = url.searchParams.get("repoOwner");
+	const repoName = url.searchParams.get("repoName");
 
-	if (!code) {
+	// Check if code or repo details are missing
+	if (!code || !repoOwner || !repoName) {
 		return NextResponse.json(
-			{ error: "Authorization code not provided" },
+			{ error: "Authorization code or repository details are missing" },
 			{ status: 400 }
 		);
 	}
@@ -40,9 +43,6 @@ export async function GET(req: NextRequest) {
 	const accessToken = tokenData.access_token;
 
 	// Step 2: Star the Repository
-	const repoOwner = "Passion-Over-Pain"; // Change this to your GitHub username/org
-	const repoName = "Portfolio-Backend"; // Change this to the repo you want to star
-
 	const starResponse = await fetch(
 		`https://api.github.com/user/starred/${repoOwner}/${repoName}`,
 		{
@@ -62,8 +62,7 @@ export async function GET(req: NextRequest) {
 		);
 	}
 
-	return NextResponse.json({
-		message: "Repository starred successfully!",
-		access_token: accessToken,
-	});
+	// Step 3: Redirect user back to your website
+	const redirectUrl = "https://tinontenda-mhedziso.pages.dev"; // Your website URL
+	return NextResponse.redirect(redirectUrl, 302);
 }
