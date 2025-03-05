@@ -3,16 +3,17 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
 	const url = new URL(req.url);
 	const code = url.searchParams.get("code");
-	const repoOwner = url.searchParams.get("repoOwner");
-	const repoName = url.searchParams.get("repoName");
+	const state = url.searchParams.get("state");
 
-	// Check if code or repo details are missing
-	if (!code || !repoOwner || !repoName) {
+	if (!code || !state) {
 		return NextResponse.json(
-			{ error: "Authorization code or repository details are missing" },
+			{ error: "Authorization code or state missing" },
 			{ status: 400 }
 		);
 	}
+
+	// Decode the state parameter to get repoOwner and repoName
+	const { repoOwner, repoName } = JSON.parse(decodeURIComponent(state));
 
 	// Step 1: Get Access Token from GitHub
 	const tokenResponse = await fetch(
