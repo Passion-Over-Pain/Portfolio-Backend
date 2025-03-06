@@ -64,6 +64,6 @@ export async function GET(req: NextRequest) {
 	}
 
 	// Step 3: Redirect user back to your website
-	const redirectUrl = "https://tinontenda-mhedziso.pages.dev"; // Your website URL
+	const redirectUrl = "https://tinotenda-mhedziso.pages.dev/";
 	return NextResponse.redirect(redirectUrl, 302);
 }
