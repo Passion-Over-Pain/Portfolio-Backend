@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     JSON.stringify({ intent, repoOwner, repoName })
   );
 
-  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=public_repo&state=${state}`;
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=public_repo,user:follow&state=${state}`;
 
   return NextResponse.redirect(githubAuthUrl);
 }
