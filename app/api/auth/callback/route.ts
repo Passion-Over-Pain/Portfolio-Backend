@@ -86,7 +86,11 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // Step 3: Redirect user back to your website
-  const redirectUrl = "https://tinotenda-mhedziso.pages.dev/";
-  return NextResponse.redirect(redirectUrl, 302);
+  if (intent === "star") {
+    const redirectUrl = "https://tinotenda-mhedziso.pages.dev/#star";
+    return NextResponse.redirect(redirectUrl, 302);
+  } else if (intent === "follow") {
+    const redirectUrl = "https://tinotenda-mhedziso.pages.dev/#follow";
+    return NextResponse.redirect(redirectUrl, 302);
+  }
 }
