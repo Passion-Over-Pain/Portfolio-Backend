@@ -8,14 +8,28 @@ export async function GET(req: NextRequest) {
   if (!code || !state) {
     return NextResponse.json(
       { error: "Authorization code or state missing" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  // Decode the state parameter to get intent, repoOwner, and repoName
-  const { intent, repoOwner, repoName } = JSON.parse(decodeURIComponent(state));
+  //Decode state
+  const { intent, repoOwner, repoName, source } = JSON.parse(
+    decodeURIComponent(state),
+  );
+  const ALLOWED_SOURCES = [
+    "https://the-atlas-six.vercel.app",
+    "https://tinotenda-mhedziso.pages.dev",
+    "http://localhost:3000",
+  ];
 
-  // Step 1: Get Access Token from GitHub
+  const isValidSource = ALLOWED_SOURCES.some((allowed) =>
+    source.startsWith(allowed),
+  );
+
+  // 3. Determine the safe redirect base
+  const safeSource = isValidSource
+    ? source
+    : "https://tinotenda-mhedziso.pages.dev";
   const tokenResponse = await fetch(
     "https://github.com/login/oauth/access_token",
     {
@@ -29,7 +43,7 @@ export async function GET(req: NextRequest) {
         client_secret: process.env.GITHUB_CLIENT_SECRET,
         code,
       }),
-    }
+    },
   );
 
   const tokenData = await tokenResponse.json();
@@ -37,7 +51,7 @@ export async function GET(req: NextRequest) {
   if (tokenData.error) {
     return NextResponse.json(
       { error: tokenData.error_description },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -52,7 +66,7 @@ export async function GET(req: NextRequest) {
     if (!repoOwner || !repoName) {
       return NextResponse.json(
         { error: "Missing repoOwner or repoName" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -68,7 +82,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Invalid intent" }, { status: 400 });
   }
 
-  // Step 2: Perform API request (star or follow)
+  // Perform API request (star or follow)
   const actionResponse = await fetch(apiUrl, {
     method,
     headers: {
@@ -82,15 +96,15 @@ export async function GET(req: NextRequest) {
     const errorText = await actionResponse.text();
     return NextResponse.json(
       { error: `${failureMessage}: ${errorText}` },
-      { status: actionResponse.status }
+      { status: actionResponse.status },
     );
   }
 
   if (intent === "star") {
-    const redirectUrl = "https://tinotenda-mhedziso.pages.dev/#star";
-    return NextResponse.redirect(redirectUrl, 302);
+    return NextResponse.redirect(`${safeSource}/#star`, 302);
   } else if (intent === "follow") {
-    const redirectUrl = "https://tinotenda-mhedziso.pages.dev/#follow";
-    return NextResponse.redirect(redirectUrl, 302);
+    return NextResponse.redirect(`${safeSource}/#follow`, 302);
   }
+
+  return NextResponse.redirect(safeSource, 302);
 }
