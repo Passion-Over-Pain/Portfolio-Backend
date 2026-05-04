@@ -12,10 +12,18 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  //Decode state
-  const { intent, repoOwner, repoName, source } = JSON.parse(
-    decodeURIComponent(state),
-  );
+  let intent, repoOwner, repoName, source;
+
+  try {
+    const parsedState = JSON.parse(decodeURIComponent(state));
+    intent = parsedState.intent;
+    repoOwner = parsedState.repoOwner;
+    repoName = parsedState.repoName;
+    source = parsedState.source;
+  } catch (e) {
+    // If state is corrupted, send them to a safe default
+    return NextResponse.redirect("https://tinotenda-mhedziso.pages.dev", 302);
+  }
   const ALLOWED_SOURCES = [
     "https://the-atlas-six.vercel.app",
     "https://tinotenda-mhedziso.pages.dev",
